@@ -1,0 +1,89 @@
+{% extends "layout.html" %} {% block body %}
+
+<h2>Add Notice</h2>
+
+<form action="/add" method="post" enctype="multipart/form-data">
+  <input
+    class="form-control"
+    type="file"
+    name="attachment"
+    accept=".pdf,.png,.jpg,.jpeg"
+  />
+  <div class="mb-3">
+    <input
+      class="form-control"
+      name="title"
+      placeholder="Notice Title"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <textarea
+      class="form-control"
+      name="description"
+      rows="5"
+      placeholder="Description"
+      required
+    ></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Department</label>
+
+    <select class="form-select" name="department" required>
+      <option value="">Select Department</option>
+
+      <option>Computer Science Engineering</option>
+      <option>Information Technology</option>
+      <option>Electronics & Communication</option>
+      <option>Electrical Engineering</option>
+      <option>Mechanical Engineering</option>
+      <option>Civil Engineering</option>
+      <option>MBA</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Year</label>
+
+    <select class="form-select" name="year" required>
+      <option value="">Select Year</option>
+
+      <option>1st Year</option>
+      <option>2nd Year</option>
+      <option>3rd Year</option>
+      <option>4th Year</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Category</label>
+
+    <select class="form-select" name="category" required>
+      <option value="">Select Category</option>
+
+      <option>Academic</option>
+      <option>Examination</option>
+      <option>Placement</option>
+      <option>Event</option>
+      <option>Holiday</option>
+      <option>General</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label"> Attachment </label>
+
+    <input
+      class="form-control"
+      type="file"
+      name="attachment"
+      accept=".pdf,.png,.jpg,.jpeg"
+    />
+  </div>
+
+  <button class="btn btn-success">Publish Notice</button>
+</form>
+
+{% endblock %}

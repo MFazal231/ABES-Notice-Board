@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div class="container mt-4">
+
+    <h2>Edit Notice</h2>
+
+    <form action="/edit/{{ notice.id }}" method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input
+                class="form-control"
+                type="text"
+                name="title"
+                value="{{ notice.title }}"
+                required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea
+                class="form-control"
+                name="description"
+                rows="5"
+                required>{{ notice.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Department</label>
+
+            <select class="form-select" name="department">
+
+                <option value="Computer Science Engineering"
+                    {% if notice.department == "Computer Science Engineering" %}selected{% endif %}>
+                    Computer Science Engineering
+                </option>
+
+                <option value="Information Technology"
+                    {% if notice.department == "Information Technology" %}selected{% endif %}>
+                    Information Technology
+                </option>
+
+                <option value="Electronics & Communication"
+                    {% if notice.department == "Electronics & Communication" %}selected{% endif %}>
+                    Electronics & Communication
+                </option>
+
+                <option value="Electrical Engineering"
+                    {% if notice.department == "Electrical Engineering" %}selected{% endif %}>
+                    Electrical Engineering
+                </option>
+
+                <option value="Mechanical Engineering"
+                    {% if notice.department == "Mechanical Engineering" %}selected{% endif %}>
+                    Mechanical Engineering
+                </option>
+
+                <option value="Civil Engineering"
+                    {% if notice.department == "Civil Engineering" %}selected{% endif %}>
+                    Civil Engineering
+                </option>
+
+                <option value="MBA"
+                    {% if notice.department == "MBA" %}selected{% endif %}>
+                    MBA
+                </option>
+
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Year</label>
+
+            <select class="form-select" name="year">
+
+                <option value="1st Year"
+                    {% if notice.year == "1st Year" %}selected{% endif %}>
+                    1st Year
+                </option>
+
+                <option value="2nd Year"
+                    {% if notice.year == "2nd Year" %}selected{% endif %}>
+                    2nd Year
+                </option>
+
+                <option value="3rd Year"
+                    {% if notice.year == "3rd Year" %}selected{% endif %}>
+                    3rd Year
+                </option>
+
+                <option value="4th Year"
+                    {% if notice.year == "4th Year" %}selected{% endif %}>
+                    4th Year
+                </option>
+
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+
+            <select class="form-select" name="category">
+
+                <option value="Academic"
+                    {% if notice.category == "Academic" %}selected{% endif %}>
+                    Academic
+                </option>
+
+                <option value="Examination"
+                    {% if notice.category == "Examination" %}selected{% endif %}>
+                    Examination
+                </option>
+
+                <option value="Placement"
+                    {% if notice.category == "Placement" %}selected{% endif %}>
+                    Placement
+                </option>
+
+                <option value="Event"
+                    {% if notice.category == "Event" %}selected{% endif %}>
+                    Event
+                </option>
+
+                <option value="Holiday"
+                    {% if notice.category == "Holiday" %}selected{% endif %}>
+                    Holiday
+                </option>
+
+                <option value="General"
+                    {% if notice.category == "General" %}selected{% endif %}>
+                    General
+                </option>
+
+            </select>
+        </div>
+
+        {% if notice.attachment %}
+        <div class="alert alert-info">
+            Current Attachment:
+            <a href="{{ url_for('static', filename='uploads/' ~ notice.attachment) }}" target="_blank">
+                View File
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label class="form-label">Replace Attachment (Optional)</label>
+            <input
+                class="form-control"
+                type="file"
+                name="attachment">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Update Notice
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

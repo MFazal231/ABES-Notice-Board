@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<h1 class="mb-4">Latest Notices</h1>
+
+{% if notices %}
+
+    {% for notice in notices %}
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+
+            <h3>{{ notice.title }}</h3>
+
+            <p>{{ notice.description }}</p>
+
+            <small>
+                {{ notice.department }}
+                |
+                {{ notice.category }}
+                |
+                {{ notice.created_at }}
+            </small>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<p>No notices available.</p>
+
+{% endif %}
+
+{% endblock %}
