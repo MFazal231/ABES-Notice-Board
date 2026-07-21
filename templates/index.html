@@ -2,37 +2,159 @@
 
 {% block body %}
 
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="/">
+            <div class="row g-3">
+
+                <div class="col-md-3">
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="search"
+                        placeholder="Search..."
+                        value="{{ search }}"
+                    >
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select" name="department">
+                        <option value="">All Departments</option>
+
+                        {% for department in departments %}
+                        <option value="{{ department }}"
+                            {% if selected_department == department %}selected{% endif %}>
+                            {{ department }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select class="form-select" name="year">
+                        <option value="">All Years</option>
+
+                        {% for year in years %}
+                        <option value="{{ year }}"
+                            {% if selected_year == year %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select class="form-select" name="category">
+                        <option value="">All Categories</option>
+
+                        {% for category in categories %}
+                        <option value="{{ category }}"
+                            {% if selected_category == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        Apply
+                    </button>
+                </div>
+
+                <div class="col-md-1 d-grid">
+                    <a href="/" class="btn btn-outline-secondary">
+                        Reset
+                    </a>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
 <h1 class="mb-4">Latest Notices</h1>
+
+{% if search or selected_department or selected_year or selected_category %}
+
+<div class="alert alert-info">
+    <strong>Active Filters:</strong>
+
+    {% if search %}
+        <span class="badge bg-primary ms-2">Search: {{ search }}</span>
+    {% endif %}
+
+    {% if selected_department %}
+        <span class="badge bg-success ms-2">Department: {{ selected_department }}</span>
+    {% endif %}
+
+    {% if selected_year %}
+        <span class="badge bg-warning text-dark ms-2">Year: {{ selected_year }}</span>
+    {% endif %}
+
+    {% if selected_category %}
+        <span class="badge bg-secondary ms-2">Category: {{ selected_category }}</span>
+    {% endif %}
+</div>
+
+{% endif %}
 
 {% if notices %}
 
+    <p class="text-muted">
+        <div class="mb-3 text-muted">
+            Showing <strong>{{ notices|length }}</strong> notice(s)
+        </div>
+    </p>
+
     {% for notice in notices %}
 
-    <div class="card mb-3">
-
+    <div class="card mb-3 shadow-sm">
         <div class="card-body">
 
-            <h3>{{ notice.title }}</h3>
+            <h4>{{ notice.title }}</h4>
 
             <p>{{ notice.description }}</p>
 
-            <small>
-                {{ notice.department }}
-                |
-                {{ notice.category }}
-                |
-                {{ notice.created_at }}
-            </small>
+            <div class="mb-2">
+                <span class="badge bg-primary">{{ notice.department }}</span>
+                <span class="badge bg-success">{{ notice.year }}</span>
+                <span class="badge bg-warning text-dark">{{ notice.category }}</span>
+            </div>
+
+            {% if notice.attachment %}
+            <a
+                href="{{ url_for('static', filename='uploads/' ~ notice.attachment) }}"
+                class="btn btn-outline-primary btn-sm"
+                target="_blank">
+                📎 View Attachment
+            </a>
+            {% endif %}
+
+            <p class="text-muted small mt-2 mb-0">
+                Posted on {{ notice.created_at }}
+            </p>
 
         </div>
-
     </div>
 
     {% endfor %}
 
 {% else %}
 
-<p>No notices available.</p>
+<div class="alert alert-warning text-center">
+
+    <h5>No notices found</h5>
+
+    <p class="mb-3">
+        Try changing or clearing your filters.
+    </p>
+
+    <a href="/" class="btn btn-primary">
+        Show All Notices
+    </a>
+
+</div>
 
 {% endif %}
 

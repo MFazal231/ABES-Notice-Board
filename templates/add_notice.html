@@ -1,89 +1,86 @@
-{% extends "layout.html" %} {% block body %}
+{% extends "layout.html" %}
 
-<h2>Add Notice</h2>
+{% block body %}
 
-<form action="/add" method="post" enctype="multipart/form-data">
-  <input
-    class="form-control"
-    type="file"
-    name="attachment"
-    accept=".pdf,.png,.jpg,.jpeg"
-  />
-  <div class="mb-3">
-    <input
-      class="form-control"
-      name="title"
-      placeholder="Notice Title"
-      required
-    />
-  </div>
+<div class="card shadow-sm">
+    <div class="card-body">
 
-  <div class="mb-3">
-    <textarea
-      class="form-control"
-      name="description"
-      rows="5"
-      placeholder="Description"
-      required
-    ></textarea>
-  </div>
+        <h2 class="mb-4">Add Notice</h2>
 
-  <div class="mb-3">
-    <label class="form-label">Department</label>
+        <form action="/add" method="post" enctype="multipart/form-data">
 
-    <select class="form-select" name="department" required>
-      <option value="">Select Department</option>
+            <div class="mb-3">
+                <label class="form-label">Notice Title</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="title"
+                    placeholder="Enter notice title"
+                    required>
+            </div>
 
-      <option>Computer Science Engineering</option>
-      <option>Information Technology</option>
-      <option>Electronics & Communication</option>
-      <option>Electrical Engineering</option>
-      <option>Mechanical Engineering</option>
-      <option>Civil Engineering</option>
-      <option>MBA</option>
-    </select>
-  </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea
+                    class="form-control"
+                    name="description"
+                    rows="5"
+                    placeholder="Enter notice description"
+                    required></textarea>
+            </div>
 
-  <div class="mb-3">
-    <label class="form-label">Year</label>
+            <div class="mb-3">
+                <label class="form-label">Department</label>
+                <select class="form-select" name="department" required>
+                    <option value="">Select Department</option>
 
-    <select class="form-select" name="year" required>
-      <option value="">Select Year</option>
+                    {% for department in departments %}
+                    <option value="{{ department }}">{{ department }}</option>
+                    {% endfor %}
 
-      <option>1st Year</option>
-      <option>2nd Year</option>
-      <option>3rd Year</option>
-      <option>4th Year</option>
-    </select>
-  </div>
+                </select>
+            </div>
 
-  <div class="mb-3">
-    <label class="form-label">Category</label>
+            <div class="mb-3">
+                <label class="form-label">Year</label>
+                <select class="form-select" name="year" required>
+                    <option value="">Select Year</option>
 
-    <select class="form-select" name="category" required>
-      <option value="">Select Category</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
 
-      <option>Academic</option>
-      <option>Examination</option>
-      <option>Placement</option>
-      <option>Event</option>
-      <option>Holiday</option>
-      <option>General</option>
-    </select>
-  </div>
+                </select>
+            </div>
 
-  <div class="mb-3">
-    <label class="form-label"> Attachment </label>
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" name="category" required>
+                    <option value="">Select Category</option>
 
-    <input
-      class="form-control"
-      type="file"
-      name="attachment"
-      accept=".pdf,.png,.jpg,.jpeg"
-    />
-  </div>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
 
-  <button class="btn btn-success">Publish Notice</button>
-</form>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Attachment (Optional)</label>
+                <input
+                    type="file"
+                    class="form-control"
+                    name="attachment"
+                    accept=".pdf,.png,.jpg,.jpeg">
+            </div>
+
+            <button class="btn btn-success">
+                Publish Notice
+            </button>
+
+        </form>
+
+    </div>
+</div>
 
 {% endblock %}

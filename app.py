@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, redirect, session, flash
 from flask_session import Session
 from cs50 import SQL
 from werkzeug.security import check_password_hash, generate_password_hash
+from config import DEPARTMENTS, YEARS, CATEGORIES
 
 from helpers import login_required
 
@@ -90,15 +91,66 @@ def allowed_file(filename):
 @app.route("/")
 def index():
 
-    notices = db.execute("""
+    search = request.args.get("search", "").strip()
+    department = request.args.get("department", "")
+    year = request.args.get("year", "")
+    category = request.args.get("category", "")
+
+    query = """
         SELECT *
         FROM notices
-        ORDER BY created_at DESC
-    """)
+        WHERE 1=1
+    """
+
+    params = []
+
+    if search:
+        query += """
+            AND (
+                title LIKE ?
+                OR description LIKE ?
+                OR department LIKE ?
+                OR year LIKE ?
+                OR category LIKE ?
+            )
+        """
+
+        params.extend([
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%",
+            f"%{search}%"
+        ])
+
+    if department:
+        query += " AND department = ?"
+        params.append(department)
+
+    if year:
+        query += " AND year = ?"
+        params.append(year)
+
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+
+    query += " ORDER BY created_at DESC"
+
+    notices = db.execute(query, *params)
+
+    print(notices)
 
     return render_template(
         "index.html",
-        notices=notices
+        notices=notices,
+        search=search,
+        departments=DEPARTMENTS,
+        years=YEARS,
+        categories=CATEGORIES,
+        selected_department=department,
+        selected_year=year,
+        selected_category=category
     )
 
 
@@ -113,15 +165,17 @@ def login():
         password = request.form.get("password")
 
         if not username or not password:
-            return "Please provide username and password.", 400
+            flash("Please provide username and password.", "danger")
+            return redirect("/login")
 
         rows = db.execute(
             "SELECT * FROM users WHERE username = ?",
             username
         )
 
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
-            return "Invalid username or password.", 403
+    if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+        flash("Invalid username or password.", "danger")
+        return redirect("/login")
 
         session["user_id"] = rows[0]["id"]
         session["role"] = rows[0]["role"]
@@ -140,6 +194,8 @@ def dashboard():
         FROM notices
         ORDER BY created_at DESC
     """)
+
+    total_notices = len(notices)
 
     total_notices = db.execute(
         "SELECT COUNT(*) AS total FROM notices"
@@ -228,7 +284,12 @@ def add():
         flash("Notice added successfully!", "success")
         return redirect("/dashboard")
 
-    return render_template("add_notice.html")
+    return render_template(
+        "add_notice.html",
+        departments=DEPARTMENTS,
+        years=YEARS,
+        categories=CATEGORIES
+)
 
 @app.route("/edit/<int:notice_id>", methods=["GET", "POST"])
 @login_required
@@ -260,14 +321,12 @@ def edit(notice_id):
             flash("Please fill in all required fields.", "danger")
             return redirect(f"/edit/{notice_id}")
 
-        # Replace attachment if a new one is uploaded
         if attachment and attachment.filename != "":
 
             if not allowed_file(attachment.filename):
                 flash("Only PDF, PNG, JPG and JPEG files are allowed.", "danger")
                 return redirect(f"/edit/{notice_id}")
 
-            # Delete old attachment
             if notice["attachment"]:
 
                 old_path = os.path.join(
@@ -278,7 +337,6 @@ def edit(notice_id):
                 if os.path.exists(old_path):
                     os.remove(old_path)
 
-            # Save new attachment
             extension = attachment.filename.rsplit(".", 1)[1].lower()
 
             filename = f"{uuid.uuid4()}.{extension}"
@@ -315,8 +373,11 @@ def edit(notice_id):
 
     return render_template(
         "edit_notice.html",
-        notice=notice
-    )
+        notice=notice,
+        departments=DEPARTMENTS,
+        years=YEARS,
+        categories=CATEGORIES
+)
 
 
 @app.route("/delete/<int:notice_id>", methods=["POST"])
