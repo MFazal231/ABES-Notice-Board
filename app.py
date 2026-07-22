@@ -135,7 +135,7 @@ def index():
         query += " AND category = ?"
         params.append(category)
 
-    query += " ORDER BY created_at DESC"
+    query += " ORDER BY pinned DESC, created_at DESC"
 
     notices = db.execute(query, *params)
 
@@ -157,9 +157,9 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
-    session.clear()
-
     if request.method == "POST":
+
+        session.clear()
 
         username = request.form.get("username")
         password = request.form.get("password")
@@ -173,13 +173,14 @@ def login():
             username
         )
 
-    if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
-        flash("Invalid username or password.", "danger")
-        return redirect("/login")
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+            flash("Invalid username or password.", "danger")
+            return redirect("/login")
 
         session["user_id"] = rows[0]["id"]
         session["role"] = rows[0]["role"]
 
+        flash("Welcome back!", "success")
         return redirect("/dashboard")
 
     return render_template("login.html")
@@ -195,8 +196,6 @@ def dashboard():
         ORDER BY created_at DESC
     """)
 
-    total_notices = len(notices)
-
     total_notices = db.execute(
         "SELECT COUNT(*) AS total FROM notices"
     )[0]["total"]
@@ -209,12 +208,26 @@ def dashboard():
         "SELECT COUNT(DISTINCT category) AS total FROM notices"
     )[0]["total"]
 
+    category_stats = db.execute("""
+        SELECT category, COUNT(*) AS total
+        FROM notices
+        GROUP BY category
+    """)
+
+    department_stats = db.execute("""
+        SELECT department, COUNT(*) AS total
+        FROM notices
+        GROUP BY department
+    """)
+
     return render_template(
         "dashboard.html",
         notices=notices,
         total_notices=total_notices,
         departments=departments,
-        categories=categories
+        categories=categories,
+        category_stats=category_stats,
+        department_stats=department_stats
     )
 
 
@@ -222,8 +235,8 @@ def dashboard():
 def logout():
 
     session.clear()
-
-    return redirect("/")
+    flash("You have been logged out.", "info")
+    return redirect("/login")
 
 
 # -----------------------------
@@ -241,6 +254,7 @@ def add():
         department = request.form.get("department")
         year = request.form.get("year")
         category = request.form.get("category")
+        pinned = 1 if request.form.get("pinned") else 0
 
         attachment = request.files.get("attachment")
         filename = None
@@ -269,8 +283,8 @@ def add():
         db.execute(
             """
             INSERT INTO notices
-            (title, description, department, year, category, attachment, created_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (title, description, department, year, category, attachment, pinned, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             title,
             description,
@@ -278,8 +292,9 @@ def add():
             year,
             category,
             filename,
+            pinned,
             session["user_id"]
-        )
+)
 
         flash("Notice added successfully!", "success")
         return redirect("/dashboard")
@@ -368,7 +383,7 @@ def edit(notice_id):
         notice_id
         )
 
-        flash("Notice updated successfully!", "success")
+        flash("Notice updated successfully!", "info")
         return redirect("/dashboard")
 
     return render_template(
@@ -409,7 +424,7 @@ def delete(notice_id):
         notice_id
     )
 
-    flash("Notice deleted successfully!", "success")
+    flash("Notice deleted successfully!", "warning")
     return redirect("/dashboard")
 
 

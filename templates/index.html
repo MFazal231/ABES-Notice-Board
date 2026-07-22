@@ -112,7 +112,15 @@
     <div class="card mb-3 shadow-sm">
         <div class="card-body">
 
-            <h4>{{ notice.title }}</h4>
+            <h2>
+                {{ notice.title }}
+
+                {% if notice.pinned %}
+                    <span class="badge bg-danger">
+                        📌 Pinned
+                    </span>
+                {% endif %}
+            </h2>
 
             <p>{{ notice.description }}</p>
 
