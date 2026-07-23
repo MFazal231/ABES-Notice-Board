@@ -12,11 +12,11 @@ A modern web-based Notice Board Management System built using **Flask**, **SQLit
 
 | Login | Dashboard |
 |-------|-----------|
-| ![](screenshots/login.png) | ![](screenshots/dashboard.png) |
+| ![](/static/screenshots/login.png) | ![](/static/screenshots/dashboard.png) |
 
 | Home | Notice Details |
 |------|----------------|
-| ![](screenshots/home.png) | ![](screenshots/notice.png) |
+| ![](/static/screenshots/home.png) | ![](/static/screenshots/notice.png) |
 
 ---
 
@@ -119,6 +119,7 @@ ABES-Digital-Notice-Board/
 │   ├── js/
 │   ├── uploads/
 │   └── images/
+│   └── screenshots/
 │
 ├── templates/
 │   ├── layout.html
