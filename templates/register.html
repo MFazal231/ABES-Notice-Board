@@ -1,0 +1,286 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block body %}
+
+<div class="login-wrapper">
+    <div class="login-card fade-in">
+
+        <!-- Logo -->
+        <div class="text-center mb-4">
+            <div class="login-logo">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+
+            <h2 class="fw-bold mt-3">Create Account</h2>
+
+            <p class="text-muted">
+                Join the ABES Digital Notice Board
+            </p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form id="registerForm" action="/register" method="post">
+
+            <!-- Username -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    Username
+                </label>
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-person"></i>
+                    </span>
+
+                    <input
+                        autocomplete="off"
+                        autofocus
+                        class="form-control"
+                        name="username"
+                        placeholder="Enter username"
+                        required
+                        type="text">
+
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+
+                <label class="form-label fw-semibold">
+                    Password
+                </label>
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+
+                    <input
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Enter password"
+                        required
+                        type="password">
+
+                    <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="togglePassword">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-2">
+
+                <label class="form-label fw-semibold">
+                    Confirm Password
+                </label>
+
+                <div class="input-group">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-shield-lock"></i>
+                    </span>
+
+                    <input
+                        class="form-control"
+                        id="confirmation"
+                        name="confirmation"
+                        placeholder="Confirm password"
+                        required
+                        type="password">
+
+                    <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="toggleConfirmation">
+
+                        <i class="bi bi-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Password Match Message -->
+            <div id="passwordMessage" class="small mb-3"></div>
+
+            <!-- Register Button -->
+            <button
+                id="registerBtn"
+                class="btn btn-primary w-100 py-2 fw-semibold rounded-pill">
+
+                <span id="btnText">
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    Create Account
+                </span>
+
+                <span
+                    id="loadingSpinner"
+                    class="spinner-border spinner-border-sm d-none">
+                </span>
+
+            </button>
+
+        </form>
+
+        <!-- Login Link -->
+        <div class="text-center mt-4">
+
+            <p class="mb-0">
+
+                Already have an account?
+
+                <a
+                    href="/login"
+                    class="fw-semibold text-decoration-none">
+
+                    Sign In
+
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}{% block scripts %}
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const password = document.getElementById("password");
+    const confirmation = document.getElementById("confirmation");
+
+    const message = document.getElementById("passwordMessage");
+
+    const registerForm = document.getElementById("registerForm");
+
+    const registerBtn = document.getElementById("registerBtn");
+
+    const btnText = document.getElementById("btnText");
+
+    const spinner = document.getElementById("loadingSpinner");
+
+    const togglePassword = document.getElementById("togglePassword");
+
+    const toggleConfirmation = document.getElementById("toggleConfirmation");
+
+
+    function checkPasswords(){
+
+        if(password.value === "" || confirmation.value === ""){
+
+            message.innerHTML = "";
+
+            return;
+
+        }
+
+        if(password.value === confirmation.value){
+
+            message.innerHTML = "✅ Passwords match";
+
+            message.className = "text-success fw-semibold";
+
+        }
+
+        else{
+
+            message.innerHTML = "❌ Passwords do not match";
+
+            message.className = "text-danger fw-semibold";
+
+        }
+
+    }
+
+
+    password.addEventListener("input", checkPasswords);
+
+    confirmation.addEventListener("input", checkPasswords);
+
+
+    togglePassword.addEventListener("click", () => {
+
+        password.type =
+            password.type === "password"
+            ? "text"
+            : "password";
+
+        togglePassword.innerHTML =
+            password.type === "password"
+            ? '<i class="bi bi-eye"></i>'
+            : '<i class="bi bi-eye-slash"></i>';
+
+    });
+
+
+    toggleConfirmation.addEventListener("click", () => {
+
+        confirmation.type =
+            confirmation.type === "password"
+            ? "text"
+            : "password";
+
+        toggleConfirmation.innerHTML =
+            confirmation.type === "password"
+            ? '<i class="bi bi-eye"></i>'
+            : '<i class="bi bi-eye-slash"></i>';
+
+    });
+
+
+    registerForm.addEventListener("submit", (e) => {
+
+        if(password.value !== confirmation.value){
+
+            e.preventDefault();
+
+            message.innerHTML = "❌ Passwords do not match";
+
+            message.className = "text-danger fw-semibold";
+
+            return;
+
+        }
+
+        btnText.innerHTML = "Creating Account...";
+
+        spinner.classList.remove("d-none");
+
+        registerBtn.disabled = true;
+
+    });
+
+});
+</script>
+{% endblock %}

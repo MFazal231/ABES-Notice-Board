@@ -7,7 +7,7 @@ from cs50 import SQL
 from werkzeug.security import check_password_hash, generate_password_hash
 from config import DEPARTMENTS, YEARS, CATEGORIES
 
-from helpers import login_required
+from helpers import admin_required, login_required
 
 
 # -----------------------------
@@ -178,6 +178,7 @@ def login():
             return redirect("/login")
 
         session["user_id"] = rows[0]["id"]
+        session["username"] = rows[0]["username"]
         session["role"] = rows[0]["role"]
 
         flash("Welcome back!", "success")
@@ -185,9 +186,65 @@ def login():
 
     return render_template("login.html")
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "GET":
+        return render_template("register.html")
+
+    # Get form data
+    username = request.form.get("username")
+    password = request.form.get("password")
+    confirmation = request.form.get("confirmation")
+
+    # Validate username
+    if not username:
+        flash("Username is required.", "danger")
+        return redirect("/register")
+
+    # Validate password
+    if not password:
+        flash("Password is required.", "danger")
+        return redirect("/register")
+
+    # Validate confirmation
+    if not confirmation:
+        flash("Please confirm your password.", "danger")
+        return redirect("/register")
+
+    # Check passwords match
+    if password != confirmation:
+        flash("Passwords do not match.", "danger")
+        return redirect("/register")
+
+    # Check if username already exists
+    existing_user = db.execute(
+        "SELECT * FROM users WHERE username = ?",
+        username
+    )
+
+    if existing_user:
+        flash("Username already exists.", "danger")
+        return redirect("/register")
+
+    # Hash password
+    hash = generate_password_hash(password)
+
+    # Insert user
+    db.execute(
+        "INSERT INTO users (username, hash, role) VALUES (?, ?, ?)",
+        username,
+        hash,
+        "student"
+    )
+
+    flash("Registration successful! Please log in.", "success")
+
+    return redirect("/login")
+
 
 @app.route("/dashboard")
 @login_required
+@admin_required
 def dashboard():
 
     per_page = 10
@@ -280,6 +337,7 @@ def logout():
 
 @app.route("/add", methods=["GET", "POST"])
 @login_required
+@admin_required
 def add():
 
     if request.method == "POST":
@@ -343,6 +401,7 @@ def add():
 
 @app.route("/edit/<int:notice_id>", methods=["GET", "POST"])
 @login_required
+@admin_required
 def edit(notice_id):
 
     notice = db.execute(
@@ -432,6 +491,7 @@ def edit(notice_id):
 
 @app.route("/delete/<int:notice_id>", methods=["POST"])
 @login_required
+@admin_required
 def delete(notice_id):
 
     notice = db.execute(
@@ -481,6 +541,7 @@ def notice(notice_id):
 
 @app.route("/toggle-pin/<int:notice_id>", methods=["POST"])
 @login_required
+@admin_required
 def toggle_pin(notice_id):
 
     notice = db.execute(
