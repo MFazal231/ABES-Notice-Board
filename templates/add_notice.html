@@ -2,97 +2,261 @@
 
 {% block body %}
 
-<div class="card shadow-sm">
-    <div class="card-body">
+<div class="card border-0 shadow-lg rounded-4">
 
-        <h2 class="mb-4">Add Notice</h2>
+    <div class="card-body p-5">
 
-        <form action="/add" method="post" enctype="multipart/form-data">
+        <div class="text-center mb-5">
 
-            <div class="mb-3">
-                <label class="form-label">Notice Title</label>
+            <div class="notice-icon mb-3">
+                <i class="bi bi-megaphone-fill"></i>
+            </div>
+
+            <h2 class="fw-bold">
+                Create New Notice
+            </h2>
+
+            <p class="text-muted">
+                Publish announcements, events, examinations and placement updates.
+            </p>
+
+        </div>
+
+        <form
+            action="/add"
+            method="post"
+            enctype="multipart/form-data"
+            id="noticeForm">
+
+            <div class="mb-4">
+
+                <label class="form-label fw-semibold">
+
+                    Notice Title
+
+                </label>
+
                 <input
                     type="text"
-                    class="form-control"
+                    class="form-control form-control-lg"
                     name="title"
                     placeholder="Enter notice title"
                     required>
+
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea
-                    class="form-control"
-                    name="description"
-                    rows="5"
-                    placeholder="Enter notice description"
-                    required></textarea>
+            <div class="row">
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label fw-semibold">
+
+                        Department
+
+                    </label>
+
+                    <select
+                        class="form-select form-select-lg"
+                        name="department"
+                        required>
+
+                        <option value="">Select Department</option>
+
+                        {% for department in departments %}
+                        <option value="{{ department }}">
+                            {{ department }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label fw-semibold">
+
+                        Year
+
+                    </label>
+
+                    <select
+                        class="form-select form-select-lg"
+                        name="year"
+                        required>
+
+                        <option value="">Select Year</option>
+
+                        {% for year in years %}
+                        <option value="{{ year }}">
+                            {{ year }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label fw-semibold">
+
+                        Category
+
+                    </label>
+
+                    <select
+                        class="form-select form-select-lg"
+                        name="category"
+                        required>
+
+                        <option value="">Select Category</option>
+
+                        {% for category in categories %}
+                        <option value="{{ category }}">
+                            {{ category }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Department</label>
-                <select class="form-select" name="department" required>
-                    <option value="">Select Department</option>
+            <div class="mb-2 d-flex justify-content-between">
 
-                    {% for department in departments %}
-                    <option value="{{ department }}">{{ department }}</option>
-                    {% endfor %}
+                <label class="form-label fw-semibold">
 
-                </select>
+                    Description
+
+                </label>
+
+                <small
+                    class="text-muted"
+                    id="charCount">
+
+                    0 / 1000
+
+                </small>
+
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Year</label>
-                <select class="form-select" name="year" required>
-                    <option value="">Select Year</option>
+            <textarea
+                class="form-control"
+                rows="8"
+                maxlength="1000"
+                id="description"
+                name="description"
+                placeholder="Write your notice here..."
+                required></textarea>
 
-                    {% for year in years %}
-                    <option value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
+            <div class="form-check my-4">
 
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Category</label>
-                <select class="form-select" name="category" required>
-                    <option value="">Select Category</option>
-
-                    {% for category in categories %}
-                    <option value="{{ category }}">{{ category }}</option>
-                    {% endfor %}
-
-                </select>
-            </div>
-
-            <div class="form-check mb-3">
                 <input
                     class="form-check-input"
                     type="checkbox"
                     id="pinned"
                     name="pinned">
 
-                <label class="form-check-label" for="pinned">
-                    📌 Pin this notice
+                <label
+                    class="form-check-label fw-semibold"
+                    for="pinned">
+
+                    <i class="bi bi-pin-angle-fill text-danger"></i>
+
+                    Pin this notice
+
                 </label>
+
             </div>
 
             <div class="mb-4">
-                <label class="form-label">Attachment (Optional)</label>
-                <input
-                    type="file"
-                    class="form-control"
-                    name="attachment"
-                    accept=".pdf,.png,.jpg,.jpeg">
+
+                <label class="form-label fw-semibold">
+
+                    Attachment (Optional)
+
+                </label>
+
+                <div class="upload-box">
+
+                    <i class="bi bi-cloud-arrow-up display-5 text-primary"></i>
+
+                    <h5 class="mt-3">
+
+                        Upload Attachment
+
+                    </h5>
+
+                    <p class="text-muted mb-3">
+
+                        PDF, JPG, JPEG or PNG
+
+                    </p>
+
+                    <input
+                        class="form-control"
+                        type="file"
+                        name="attachment"
+                        accept=".pdf,.png,.jpg,.jpeg">
+
+                </div>
+
             </div>
 
-            <button class="btn btn-success">
-                Publish Notice
-            </button>
+            <div class="d-flex justify-content-end gap-3">
+
+                <a
+                    href="/"
+                    class="btn btn-outline-secondary rounded-pill px-4">
+
+                    Cancel
+
+                </a>
+
+                <button
+                    class="btn btn-success rounded-pill px-5"
+                    id="submitBtn">
+
+                    <i class="bi bi-send-fill me-2"></i>
+
+                    Publish Notice
+
+                </button>
+
+            </div>
 
         </form>
 
     </div>
+
 </div>
+
+<script>
+
+const description=document.getElementById("description");
+const counter=document.getElementById("charCount");
+
+description.addEventListener("input",()=>{
+
+counter.textContent=
+`${description.value.length} / 1000`;
+
+});
+
+const form=document.getElementById("noticeForm");
+const submit=document.getElementById("submitBtn");
+
+form.addEventListener("submit",()=>{
+
+submit.disabled=true;
+
+submit.innerHTML=
+'<span class="spinner-border spinner-border-sm me-2"></span>Publishing...';
+
+});
+
+</script>
 
 {% endblock %}

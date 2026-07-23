@@ -2,123 +2,273 @@
 
 {% block body %}
 
-<div class="card shadow-sm">
-    <div class="card-body">
+<div class="card border-0 shadow-lg rounded-4">
 
-        <h2 class="mb-4">Edit Notice</h2>
+    <div class="card-body p-5">
 
-        <form action="/edit/{{ notice.id }}" method="post" enctype="multipart/form-data">
+        <div class="text-center mb-5">
 
-            <div class="mb-3">
-                <label class="form-label">Notice Title</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    name="title"
-                    value="{{ notice.title }}"
-                    required>
+            <div class="notice-icon bg-warning text-dark mb-3">
+                <i class="bi bi-pencil-square"></i>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea
-                    class="form-control"
-                    name="description"
-                    rows="5"
-                    required>{{ notice.description }}</textarea>
-            </div>
+            <h2 class="fw-bold">
+                Edit Notice
+            </h2>
 
-            <div class="mb-3">
-                <label class="form-label">Department</label>
+            <p class="text-muted">
+                Update the notice details before publishing the changes.
+            </p>
 
-                <select class="form-select" name="department" required>
+        </div>
 
-                    {% for department in departments %}
+        <form
+            action="/edit/{{ notice.id }}"
+            method="post"
+            enctype="multipart/form-data"
+            id="editForm">
 
-                    <option
-                        value="{{ department }}"
-                        {% if notice.department == department %}selected{% endif %}>
-                        {{ department }}
-                    </option>
+            <!-- Title -->
 
-                    {% endfor %}
+            <div class="mb-4">
 
-                </select>
-
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Year</label>
-
-                <select class="form-select" name="year" required>
-
-                    {% for year in years %}
-
-                    <option
-                        value="{{ year }}"
-                        {% if notice.year == year %}selected{% endif %}>
-                        {{ year }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Category</label>
-
-                <select class="form-select" name="category" required>
-
-                    {% for category in categories %}
-
-                    <option
-                        value="{{ category }}"
-                        {% if notice.category == category %}selected{% endif %}>
-                        {{ category }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-            <div class="mb-3">
-
-                <label class="form-label">
-                    Replace Attachment (Optional)
+                <label class="form-label fw-semibold">
+                    Notice Title
                 </label>
 
                 <input
-                    type="file"
-                    class="form-control"
-                    name="attachment"
-                    accept=".pdf,.png,.jpg,.jpeg">
+                    type="text"
+                    class="form-control form-control-lg"
+                    name="title"
+                    value="{{ notice.title }}"
+                    required>
+
+            </div>
+
+            <!-- Department / Year / Category -->
+
+            <div class="row">
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Department
+                    </label>
+
+                    <select
+                        class="form-select form-select-lg"
+                        name="department"
+                        required>
+
+                        {% for department in departments %}
+
+                        <option
+                            value="{{ department }}"
+                            {% if notice.department == department %}selected{% endif %}>
+                            {{ department }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Year
+                    </label>
+
+                    <select
+                        class="form-select form-select-lg"
+                        name="year"
+                        required>
+
+                        {% for year in years %}
+
+                        <option
+                            value="{{ year }}"
+                            {% if notice.year == year %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Category
+                    </label>
+
+                    <select
+                        class="form-select form-select-lg"
+                        name="category"
+                        required>
+
+                        {% for category in categories %}
+
+                        <option
+                            value="{{ category }}"
+                            {% if notice.category == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- Description -->
+
+            <div class="mb-2 d-flex justify-content-between">
+
+                <label class="form-label fw-semibold">
+                    Description
+                </label>
+
+                <small
+                    class="text-muted"
+                    id="charCount">
+
+                    {{ notice.description|length }} / 1000
+
+                </small>
+
+            </div>
+
+            <textarea
+                class="form-control"
+                rows="8"
+                maxlength="1000"
+                id="description"
+                name="description"
+                required>{{ notice.description }}</textarea>
+
+            <!-- Attachment -->
+
+            <div class="mt-5">
+
+                <label class="form-label fw-semibold">
+                    Replace Attachment (Optional)
+                </label>
+
+                <div class="upload-box">
+
+                    <i class="bi bi-arrow-repeat display-5 text-warning"></i>
+
+                    <h5 class="mt-3">
+
+                        Replace Existing Attachment
+
+                    </h5>
+
+                    <p class="text-muted">
+
+                        Leave empty to keep the current file.
+
+                    </p>
+
+                    <input
+                        class="form-control"
+                        type="file"
+                        name="attachment"
+                        accept=".pdf,.png,.jpg,.jpeg">
+
+                </div>
 
             </div>
 
             {% if notice.attachment %}
 
-            <div class="mb-4">
+            <div class="alert alert-light border rounded-4 mt-4">
+
+                <strong>
+
+                    <i class="bi bi-paperclip me-2"></i>
+
+                    Current Attachment
+
+                </strong>
+
+                <br><br>
+
                 <a
                     href="{{ url_for('static', filename='uploads/' ~ notice.attachment) }}"
                     target="_blank"
-                    class="btn btn-outline-primary btn-sm">
-                    📎 View Current Attachment
+                    class="btn btn-outline-primary rounded-pill">
+
+                    <i class="bi bi-eye me-2"></i>
+
+                    View Current Attachment
+
                 </a>
+
             </div>
 
             {% endif %}
 
-            <button class="btn btn-primary">
-                Update Notice
-            </button>
+            <!-- Buttons -->
+
+            <div class="d-flex justify-content-end gap-3 mt-5">
+
+                <a
+                    href="/"
+                    class="btn btn-outline-secondary rounded-pill px-4">
+
+                    Cancel
+
+                </a>
+
+                <button
+                    class="btn btn-warning rounded-pill px-5"
+                    id="updateBtn">
+
+                    <i class="bi bi-check-circle-fill me-2"></i>
+
+                    Update Notice
+
+                </button>
+
+            </div>
 
         </form>
 
     </div>
+
 </div>
+
+<script>
+
+const description=document.getElementById("description");
+const counter=document.getElementById("charCount");
+
+description.addEventListener("input",()=>{
+
+counter.textContent=
+`${description.value.length} / 1000`;
+
+});
+
+const form=document.getElementById("editForm");
+const button=document.getElementById("updateBtn");
+
+form.addEventListener("submit",()=>{
+
+button.disabled=true;
+
+button.innerHTML=
+'<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+});
+
+</script>
 
 {% endblock %}

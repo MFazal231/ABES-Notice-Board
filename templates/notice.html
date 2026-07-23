@@ -2,91 +2,144 @@
 
 {% block body %}
 
-<div class="card shadow">
+<div class="notice-header rounded-4 shadow-lg mb-4 p-5">
 
-    <div class="card-header bg-primary text-white">
-        <h3>{{ notice.title }}</h3>
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+        <div>
+
+            <h1 class="fw-bold mb-3">
+
+                {% if notice.pinned %}
+                <i class="bi bi-pin-angle-fill text-warning me-2"></i>
+                {% else %}
+                <i class="bi bi-megaphone-fill text-light me-2"></i>
+                {% endif %}
+
+                {{ notice.title }}
+
+            </h1>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                    <i class="bi bi-building me-1"></i>
+                    {{ notice.department }}
+                </span>
+
+                <span class="badge rounded-pill bg-success px-3 py-2">
+                    {{ notice.year }}
+                </span>
+
+                <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                    {{ notice.category }}
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="text-end mt-3 mt-md-0">
+
+            <small class="text-white-50">
+
+                <i class="bi bi-clock-history me-1"></i>
+
+                Posted
+
+            </small>
+
+            <h6 class="text-white">
+
+                {{ notice.created_at }}
+
+            </h6>
+
+        </div>
+
     </div>
 
-    <div class="card-body">
+</div>
 
-        <div class="row mb-3">
 
-            <div class="col-md-4">
-                <strong>Department</strong><br>
-                {{ notice.department }}
-            </div>
+<div class="card border-0 rounded-4 shadow-lg">
 
-            <div class="col-md-4">
-                <strong>Year</strong><br>
-                {{ notice.year }}
-            </div>
+    <div class="card-body p-5">
 
-            <div class="col-md-4">
-                <strong>Category</strong><br>
-                {{ notice.category }}
-            </div>
+        <h4 class="fw-bold mb-4">
 
-        </div>
+            <i class="bi bi-file-text text-primary me-2"></i>
 
-        <div class="mb-4">
+            Notice Description
 
-            <strong>Description</strong>
+        </h4>
 
-            <p class="mt-2">
-                {{ notice.description }}
-            </p>
+        <div class="notice-description">
 
-        </div>
-
-        <div class="mb-4">
-
-            <strong>Posted On</strong><br>
-
-            {{ notice.created_at }}
+            {{ notice.description | replace('\n','<br>') | safe }}
 
         </div>
 
         {% if notice.attachment %}
 
-<h5 class="mt-4">Attachment</h5>
+        <hr class="my-5">
 
-{% set extension = notice.attachment.split('.')[-1].lower() %}
+        <h4 class="fw-bold mb-4">
 
-{% if extension in ['jpg', 'jpeg', 'png'] %}
+            <i class="bi bi-paperclip text-primary me-2"></i>
 
-<div class="mb-3">
-    <img
-        src="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
-        class="img-fluid rounded shadow"
-        alt="Notice Attachment">
-</div>
+            Attachment
 
-{% elif extension == 'pdf' %}
+        </h4>
 
-<div class="mb-3">
-    <embed
-        src="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
-        type="application/pdf"
-        width="100%"
-        height="700px">
-</div>
+        {% set extension = notice.attachment.split('.')[-1].lower() %}
 
-{% endif %}
+        {% if extension in ['jpg','jpeg','png'] %}
 
-<a
-    href="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
-    class="btn btn-success"
-    target="_blank">
+        <div class="text-center mb-4">
 
-    <i class="bi bi-download"></i> Download Attachment
+            <img
+                src="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
+                class="img-fluid rounded-4 shadow"
+                style="max-height:650px;"
+                alt="Attachment">
 
-</a>
+        </div>
 
-{% endif %}
+        {% elif extension == 'pdf' %}
 
-        <a href="/" class="btn btn-secondary">
-            Back
+        <div class="ratio ratio-16x9 mb-4">
+
+            <embed
+                src="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
+                type="application/pdf">
+
+        </div>
+
+        {% endif %}
+
+        <a
+            href="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
+            target="_blank"
+            class="btn btn-success rounded-pill px-4">
+
+            <i class="bi bi-download me-2"></i>
+
+            Download Attachment
+
+        </a>
+
+        {% endif %}
+
+        <hr class="my-5">
+
+        <a href="/"
+           class="btn btn-outline-secondary rounded-pill px-4">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+            Back to Notices
+
         </a>
 
     </div>

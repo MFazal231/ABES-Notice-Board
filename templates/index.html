@@ -2,39 +2,55 @@
 
 {% block body %}
 
-<div class="bg-primary text-white rounded-4 p-5 mb-4 shadow">
-    <div class="text-center">
-        <h1 class="display-5 fw-bold">
-            ABES Digital Notice Board
-        </h1>
+<!-- Hero Section -->
+<div class="hero-section rounded-4 p-5 mb-5 shadow-lg text-center">
 
-        <p class="lead">
-            Stay updated with the latest college announcements, exams, events and placements.
-        </p>
+    <h1 class="display-4 fw-bold mb-3">
+        <i class="bi bi-megaphone-fill me-2"></i>
+        ABES Digital Notice Board
+    </h1>
 
-        <a href="#latest-notices" class="btn btn-light btn-lg">
-            View Latest Notices
-        </a>
-    </div>
+    <p class="lead opacity-75 mb-4">
+        Stay updated with the latest college announcements, examinations,
+        events, placements and important notifications.
+    </p>
+
+    <a href="#latest-notices" class="btn btn-light btn-lg rounded-pill px-5 shadow-sm">
+        <i class="bi bi-arrow-down-circle me-2"></i>
+        View Latest Notices
+    </a>
+
 </div>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
+<!-- Search & Filters -->
+<div class="card border-0 shadow-lg rounded-4 mb-5">
+
+    <div class="card-body p-4">
+
+        <h5 class="fw-bold mb-4">
+            <i class="bi bi-funnel-fill text-primary me-2"></i>
+            Search & Filters
+        </h5>
+
         <form method="GET" action="/">
+
             <div class="row g-3">
 
-                <div class="col-md-3">
+                <div class="col-lg-3">
+
                     <input
                         type="text"
-                        class="form-control"
+                        class="form-control form-control-lg"
                         name="search"
-                        placeholder="Search..."
-                        value="{{ search }}"
-                    >
+                        placeholder="🔍 Search notices..."
+                        value="{{ search }}">
+
                 </div>
 
-                <div class="col-md-3">
-                    <select class="form-select" name="department">
+                <div class="col-lg-3">
+
+                    <select class="form-select form-select-lg" name="department">
+
                         <option value="">All Departments</option>
 
                         {% for department in departments %}
@@ -43,11 +59,15 @@
                             {{ department }}
                         </option>
                         {% endfor %}
+
                     </select>
+
                 </div>
 
-                <div class="col-md-2">
-                    <select class="form-select" name="year">
+                <div class="col-lg-2">
+
+                    <select class="form-select form-select-lg" name="year">
+
                         <option value="">All Years</option>
 
                         {% for year in years %}
@@ -56,11 +76,15 @@
                             {{ year }}
                         </option>
                         {% endfor %}
+
                     </select>
+
                 </div>
 
-                <div class="col-md-2">
-                    <select class="form-select" name="category">
+                <div class="col-lg-2">
+
+                    <select class="form-select form-select-lg" name="category">
+
                         <option value="">All Categories</option>
 
                         {% for category in categories %}
@@ -69,130 +93,225 @@
                             {{ category }}
                         </option>
                         {% endfor %}
+
                     </select>
+
                 </div>
 
-                <div class="col-md-1 d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        Apply
+                <div class="col-lg-1 d-grid">
+
+                    <button class="btn btn-primary btn-lg">
+                        <i class="bi bi-search"></i>
                     </button>
+
                 </div>
 
-                <div class="col-md-1 d-grid">
-                    <a href="/" class="btn btn-outline-secondary">
-                        Reset
+                <div class="col-lg-1 d-grid">
+
+                    <a href="/" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-counterclockwise"></i>
                     </a>
+
                 </div>
 
             </div>
+
         </form>
+
     </div>
+
 </div>
 
-<h1 id="latest-notices" class="mb-4">Latest Notices</h1>
+<!-- Active Filters -->
 
 {% if search or selected_department or selected_year or selected_category %}
 
-<div class="alert alert-info">
+<div class="alert alert-info rounded-4 border-0 shadow-sm">
+
     <strong>Active Filters:</strong>
 
     {% if search %}
-        <span class="badge bg-primary ms-2">Search: {{ search }}</span>
+    <span class="badge rounded-pill bg-primary ms-2 px-3 py-2">
+        Search: {{ search }}
+    </span>
     {% endif %}
 
     {% if selected_department %}
-        <span class="badge bg-success ms-2">Department: {{ selected_department }}</span>
+    <span class="badge rounded-pill bg-success ms-2 px-3 py-2">
+        {{ selected_department }}
+    </span>
     {% endif %}
 
     {% if selected_year %}
-        <span class="badge bg-warning text-dark ms-2">Year: {{ selected_year }}</span>
+    <span class="badge rounded-pill bg-warning text-dark ms-2 px-3 py-2">
+        {{ selected_year }}
+    </span>
     {% endif %}
 
     {% if selected_category %}
-        <span class="badge bg-secondary ms-2">Category: {{ selected_category }}</span>
+    <span class="badge rounded-pill bg-dark ms-2 px-3 py-2">
+        {{ selected_category }}
+    </span>
     {% endif %}
+
 </div>
 
 {% endif %}
 
-{% if notices %}
+<!-- Heading -->
 
-    <p class="text-muted">
-        <div class="mb-3 text-muted">
-            Showing <strong>{{ notices|length }}</strong> latest notice(s)
-        </div>
-    </p>
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    {% for notice in notices %}
+    <h2 id="latest-notices" class="fw-bold">
 
-    <div class="card mb-3 shadow-sm">
-        <div class="card-body">
+        <i class="bi bi-newspaper text-primary me-2"></i>
 
-            <div class="d-flex justify-content-between align-items-center">
+        Latest Notices
 
-    <h3 class="mb-2">
+    </h2>
 
-        {% if notice.pinned %}
-            <i class="bi bi-pin-angle-fill text-danger"></i>
-        {% endif %}
-
-        {{ notice.title }}
-
-    </h3>
-
-    <span class="badge bg-dark">
-        {{ notice.category }}
+    {% if notices %}
+    <span class="text-muted">
+        {{ notices|length }} notice(s)
     </span>
+    {% endif %}
 
 </div>
 
-            <p>
-    {{ notice.description[:150] }}
-    {% if notice.description|length > 150 %}...{% endif %}
-</p>
+<!-- Notices -->
 
-<a href="/notice/{{ notice.id }}"
-   class="btn btn-outline-primary btn-sm mb-3">
-    Read More
-</a>
+{% if notices %}
 
-            <div class="mb-2">
-                <span class="badge bg-primary">{{ notice.department }}</span>
-                <span class="badge bg-success">{{ notice.year }}</span>
-                <span class="badge bg-warning text-dark">{{ notice.category }}</span>
+{% for notice in notices %}
+
+<div class="card notice-card border-0 rounded-4 shadow-sm mb-4">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+            <div>
+
+                <h3 class="fw-bold mb-3">
+
+                    {% if notice.pinned %}
+                    <i class="bi bi-pin-angle-fill text-danger me-2"></i>
+                    {% endif %}
+
+                    {{ notice.title }}
+
+                </h3>
+
             </div>
 
-            {% if notice.attachment %}
-            <a
-                href="{{ url_for('static', filename='uploads/' ~ notice.attachment) }}"
-                class="btn btn-outline-primary btn-sm"
-                target="_blank">
-                📎 View Attachment
-            </a>
-            {% endif %}
-
-            <p class="text-muted small mt-2 mb-0">
-                Posted on {{ notice.created_at }}
-            </p>
+            <span class="badge rounded-pill bg-dark px-3 py-2">
+                {{ notice.category }}
+            </span>
 
         </div>
+
+        <p class="text-muted mb-4">
+
+            {{ notice.description[:180] }}
+
+            {% if notice.description|length > 180 %}
+            ...
+            {% endif %}
+
+        </p>
+
+        <div class="mb-4">
+
+            <span class="badge rounded-pill bg-primary px-3 py-2 me-2">
+                <i class="bi bi-building me-1"></i>
+                {{ notice.department }}
+            </span>
+
+            <span class="badge rounded-pill bg-success px-3 py-2 me-2">
+                {{ notice.year }}
+            </span>
+
+            <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
+                {{ notice.category }}
+            </span>
+
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+
+                <a href="/notice/{{ notice.id }}"
+                   class="btn btn-primary rounded-pill px-4">
+
+                    <i class="bi bi-book me-2"></i>
+
+                    Read More
+
+                </a>
+
+                {% if notice.attachment %}
+
+                <a
+                    href="{{ url_for('static', filename='uploads/' ~ notice.attachment) }}"
+                    class="btn btn-outline-primary rounded-pill ms-2"
+                    target="_blank">
+
+                    <i class="bi bi-paperclip me-1"></i>
+
+                    Attachment
+
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            <small class="text-muted">
+
+                <i class="bi bi-clock-history me-1"></i>
+
+                {{ notice.created_at }}
+
+            </small>
+
+        </div>
+
     </div>
 
-    {% endfor %}
+</div>
+
+{% endfor %}
 
 {% else %}
 
-<div class="alert alert-warning text-center">
+<div class="card border-0 rounded-4 shadow-lg">
 
-    <h5>No notices found</h5>
+    <div class="card-body text-center py-5">
 
-    <p class="mb-3">
-        Try changing or clearing your filters.
-    </p>
+        <i class="bi bi-inbox display-1 text-secondary"></i>
 
-    <a href="/" class="btn btn-primary">
-        Show All Notices
-    </a>
+        <h3 class="mt-4 fw-bold">
+
+            No Notices Found
+
+        </h3>
+
+        <p class="text-muted">
+
+            Try changing your filters or search terms.
+
+        </p>
+
+        <a href="/" class="btn btn-primary rounded-pill px-4">
+
+            <i class="bi bi-arrow-repeat me-2"></i>
+
+            Show All Notices
+
+        </a>
+
+    </div>
 
 </div>
 
