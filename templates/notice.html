@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-primary text-white">
+        <h3>{{ notice.title }}</h3>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row mb-3">
+
+            <div class="col-md-4">
+                <strong>Department</strong><br>
+                {{ notice.department }}
+            </div>
+
+            <div class="col-md-4">
+                <strong>Year</strong><br>
+                {{ notice.year }}
+            </div>
+
+            <div class="col-md-4">
+                <strong>Category</strong><br>
+                {{ notice.category }}
+            </div>
+
+        </div>
+
+        <div class="mb-4">
+
+            <strong>Description</strong>
+
+            <p class="mt-2">
+                {{ notice.description }}
+            </p>
+
+        </div>
+
+        <div class="mb-4">
+
+            <strong>Posted On</strong><br>
+
+            {{ notice.created_at }}
+
+        </div>
+
+        {% if notice.attachment %}
+
+<h5 class="mt-4">Attachment</h5>
+
+{% set extension = notice.attachment.split('.')[-1].lower() %}
+
+{% if extension in ['jpg', 'jpeg', 'png'] %}
+
+<div class="mb-3">
+    <img
+        src="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
+        class="img-fluid rounded shadow"
+        alt="Notice Attachment">
+</div>
+
+{% elif extension == 'pdf' %}
+
+<div class="mb-3">
+    <embed
+        src="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
+        type="application/pdf"
+        width="100%"
+        height="700px">
+</div>
+
+{% endif %}
+
+<a
+    href="{{ url_for('static', filename='uploads/' + notice.attachment) }}"
+    class="btn btn-success"
+    target="_blank">
+
+    <i class="bi bi-download"></i> Download Attachment
+
+</a>
+
+{% endif %}
+
+        <a href="/" class="btn btn-secondary">
+            Back
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

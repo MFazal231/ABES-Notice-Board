@@ -190,11 +190,24 @@ def login():
 @login_required
 def dashboard():
 
+    per_page = 10
+
+    page = request.args.get("page", 1, type=int)
+
+    offset = (page - 1) * per_page
+
     notices = db.execute("""
         SELECT *
         FROM notices
-        ORDER BY created_at DESC
-    """)
+        ORDER BY pinned DESC, created_at DESC
+        LIMIT ? OFFSET ?
+    """, per_page, offset)
+
+    total = db.execute(
+        "SELECT COUNT(*) AS total FROM notices"
+    )[0]["total"]
+
+    total_pages = (total + per_page - 1) // per_page
 
     total_notices = db.execute(
         "SELECT COUNT(*) AS total FROM notices"
@@ -220,6 +233,23 @@ def dashboard():
         GROUP BY department
     """)
 
+    # Pinned notices
+    pinned_notices = db.execute(
+        "SELECT COUNT(*) AS total FROM notices WHERE pinned = 1"
+    )[0]["total"]
+
+    # Notices with attachments
+    attachment_notices = db.execute(
+        "SELECT COUNT(*) AS total FROM notices WHERE attachment IS NOT NULL AND attachment != ''"
+    )[0]["total"]
+
+    # Notices added today
+    today_notices = db.execute("""
+        SELECT COUNT(*) AS total
+        FROM notices
+        WHERE DATE(created_at) = DATE('now', 'localtime')
+    """)[0]["total"]
+
     return render_template(
         "dashboard.html",
         notices=notices,
@@ -227,7 +257,12 @@ def dashboard():
         departments=departments,
         categories=categories,
         category_stats=category_stats,
-        department_stats=department_stats
+        department_stats=department_stats,
+        page=page,
+        total_pages=total_pages,
+        pinned_notices=pinned_notices,
+        attachment_notices=attachment_notices,
+        today_notices=today_notices
     )
 
 
@@ -428,9 +463,64 @@ def delete(notice_id):
     return redirect("/dashboard")
 
 
+@app.route("/notice/<int:notice_id>")
+def notice(notice_id):
+
+    notice = db.execute(
+        "SELECT * FROM notices WHERE id = ?",
+        notice_id
+    )
+
+    if len(notice) != 1:
+        return "Notice not found.", 404
+
+    return render_template(
+        "notice.html",
+        notice=notice[0]
+    )
+
+@app.route("/toggle-pin/<int:notice_id>", methods=["POST"])
+@login_required
+def toggle_pin(notice_id):
+
+    notice = db.execute(
+        "SELECT pinned FROM notices WHERE id = ?",
+        notice_id
+    )
+
+    if len(notice) != 1:
+        flash("Notice not found.", "danger")
+        return redirect("/dashboard")
+
+    new_status = 0 if notice[0]["pinned"] else 1
+
+    db.execute(
+        "UPDATE notices SET pinned = ? WHERE id = ?",
+        new_status,
+        notice_id
+    )
+
+    flash("Pin status updated!", "success")
+
+    return redirect("/dashboard")
+
+
+# -----------------------------
+# Error Handlers
+# -----------------------------
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("404.html"), 404
+
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template("500.html"), 500
+
 # -----------------------------
 # Run Application
 # -----------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

@@ -1,7 +1,256 @@
-body{
-    background:#f5f7fb;
+/* ==========================================
+   GENERAL
+========================================== */
+
+body {
+    background: #f5f7fb;
+    transition: background-color .3s ease, color .3s ease;
 }
 
-h1{
-    font-weight:700;
+h1 {
+    font-weight: 700;
+}
+
+/* Smooth transitions */
+
+* {
+    transition:
+        background-color .25s ease,
+        color .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+
+/* ==========================================
+   DARK MODE
+========================================== */
+
+body.dark-mode {
+    background: #0d1117;
+    color: #f8f9fa;
+}
+
+
+/* ==========================================
+   NAVBAR
+========================================== */
+
+body.dark-mode .navbar {
+    background: #161b22 !important;
+    border-bottom: 1px solid #30363d;
+}
+
+body.dark-mode .navbar-brand {
+    color: white !important;
+}
+
+
+/* ==========================================
+   CARDS
+========================================== */
+
+body.dark-mode .card {
+    background: #161b22;
+    color: white;
+    border: 1px solid #30363d;
+    box-shadow: 0 0 10px rgba(0,0,0,.25);
+}
+
+body.dark-mode .card small,
+body.dark-mode .card p,
+body.dark-mode .card h1,
+body.dark-mode .card h2,
+body.dark-mode .card h3,
+body.dark-mode .card h4,
+body.dark-mode .card h5,
+body.dark-mode .card h6 {
+    color: inherit;
+}
+
+
+/* ==========================================
+   TABLE
+========================================== */
+
+body.dark-mode .table {
+    color: #f8f9fa;
+    border-color: #30363d;
+}
+
+body.dark-mode .table thead th {
+    background: #21262d;
+    color: #ffffff;
+    border-color: #30363d;
+}
+
+body.dark-mode .table tbody tr {
+    background: #161b22;
+}
+
+body.dark-mode .table tbody td {
+    background: #161b22;
+    color: #f8f9fa;
+    border-color: #30363d;
+}
+
+body.dark-mode .table tbody tr:hover td {
+    background: #21262d;
+}
+
+
+/* ==========================================
+   FORMS
+========================================== */
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+
+    background: #21262d;
+    color: white;
+    border: 1px solid #444;
+
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+
+    background: #21262d;
+    color: white;
+    border-color: #0d6efd;
+    box-shadow: none;
+
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #adb5bd;
+}
+
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+body.dark-mode .btn-outline-secondary {
+    color: white;
+    border-color: #555;
+}
+
+body.dark-mode .btn-outline-secondary:hover {
+    background: #30363d;
+}
+
+
+/* ==========================================
+   LINKS
+========================================== */
+
+body.dark-mode a {
+    color: #8ab4f8;
+}
+
+body.dark-mode a:hover {
+    color: #aecbfa;
+}
+
+
+/* ==========================================
+   PAGINATION
+========================================== */
+
+body.dark-mode .page-link {
+    background: #21262d;
+    color: white;
+    border: 1px solid #30363d;
+}
+
+body.dark-mode .page-item.active .page-link {
+    background: #0d6efd;
+    border-color: #0d6efd;
+}
+
+body.dark-mode .page-item.disabled .page-link {
+    background: #161b22;
+    color: #666;
+}
+
+
+/* ==========================================
+   MODALS
+========================================== */
+
+body.dark-mode .modal-content {
+    background: #161b22;
+    color: white;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+    border-color: #30363d;
+}
+
+
+/* ==========================================
+   TOASTS
+========================================== */
+
+body.dark-mode .toast {
+    background: #21262d;
+    color: white;
+}
+
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+body.dark-mode footer {
+    background: #161b22 !important;
+    border-top: 1px solid #30363d !important;
+}
+
+body.dark-mode footer p,
+body.dark-mode footer small,
+body.dark-mode footer .text-muted {
+    color: #d1d5db !important;
+}
+
+
+/* ==========================================
+   TEXT
+========================================== */
+
+body.dark-mode .text-muted {
+    color: #adb5bd !important;
+}
+
+
+/* ==========================================
+   CHART CONTAINERS
+========================================== */
+
+body.dark-mode canvas {
+    background: transparent;
+}
+
+
+/* ==========================================
+   SCROLLBAR (Chrome/Edge)
+========================================== */
+
+body.dark-mode::-webkit-scrollbar {
+    width: 10px;
+}
+
+body.dark-mode::-webkit-scrollbar-track {
+    background: #161b22;
+}
+
+body.dark-mode::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+}
+
+body.dark-mode::-webkit-scrollbar-thumb:hover {
+    background: #666;
 }
