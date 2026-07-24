@@ -1,6 +1,27 @@
-.venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+
+# Flask
+flask_session/
+instance/
+
+# Database
+notice.db
+database/notice.db
+
+# Environment
 .env
-database/*.db
-static/uploads/*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

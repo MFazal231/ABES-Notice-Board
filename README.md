@@ -1,223 +1,265 @@
 # 📢 ABES Digital Notice Board
 
-A modern web-based Notice Board Management System built using **Flask**, **SQLite**, **Bootstrap 5**, and **Chart.js**. The application enables administrators to create, manage, and organize notices efficiently while providing students with an intuitive interface to browse announcements.
+<p align="center">
+  <img src="assets/banner.png" alt="ABES Digital Notice Board Banner">
+</p>
 
-> 🎓 CS50x Final Project
+<p align="center">
+
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-3.x-black?style=for-the-badge&logo=flask)
+![SQLite](https://img.shields.io/badge/SQLite-Database-blue?style=for-the-badge&logo=sqlite)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?style=for-the-badge&logo=bootstrap)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+</p>
 
 ---
 
-## 📸 Preview
+## 📖 About
 
-> *(Add screenshots here after uploading them.)*
+**ABES Digital Notice Board** is a modern web application developed using **Flask** that digitizes the traditional college notice board system.
 
-| Login | Dashboard |
-|-------|-----------|
-| ![](/static/screenshots/login.png) | ![](/static/screenshots/dashboard.png) |
+Instead of relying on physical notice boards, administrators can publish notices online while students can access them anytime through a clean and responsive interface.
 
-| Home | Notice Details |
-|------|----------------|
-| ![](/static/screenshots/home.png) | ![](/static/screenshots/notice.png) |
+This project was developed as my **CS50 Final Project**.
 
 ---
 
 # ✨ Features
 
-## 🔐 Authentication
+### 👨‍💼 Admin
 
 - Secure Login
-- User Registration
-- Password Hashing
-- Session Management
+- Create Notices
+- Edit Notices
+- Delete Notices
+- Pin / Unpin Important Notices
+- Upload Attachments
+- Dashboard Analytics
+- View Statistics
+- Category Management
 
----
+### 👨‍🎓 Student
 
-## 📢 Notice Management
-
-- Create Notice
-- Edit Notice
-- Delete Notice
-- Pin / Unpin Notices
-- Notice Categories
-- Department Selection
+- Browse Notices
 - Search Notices
+- Filter by Department
+- Filter by Year
 - Filter by Category
-- Pagination
+- View Notice Details
+- Responsive Mobile Experience
 
----
-
-## 📂 File Uploads
-
-Supports:
-
-- Images
-- PDF Documents
-
-Uploaded files can be viewed directly from the application.
-
----
-
-## 📊 Dashboard
-
-Interactive dashboard including:
-
-- Total Notices
-- Pinned Notices
-- Categories
-- Departments
-- Recent Notices
-- Analytics Charts
-- Quick Statistics
-
-Powered by **Chart.js**.
-
----
-
-## 🎨 UI Features
+### 🎨 User Interface
 
 - Responsive Design
 - Bootstrap 5
 - Dark Mode
 - Toast Notifications
-- Custom Delete Confirmation Modal
-- Hover Animations
-- Count-Up Statistics
-- Custom 404 & 500 Error Pages
+- Delete Confirmation Modal
+- Count-up Dashboard Animation
+- Smooth Page Animations
 
 ---
 
-# 🛠 Tech Stack
-
-### Backend
+# 🛠️ Built With
 
 - Python
 - Flask
+- CS50 SQL
 - SQLite
-
-### Frontend
-
 - HTML5
 - CSS3
 - Bootstrap 5
 - JavaScript
 - Jinja2
-
-### Libraries
-
 - Chart.js
-- Werkzeug
+
+---
+
+# 📸 Screenshots
+
+## Login
+
+![Login](static/screenshots/login.png)
+
+---
+
+## Home
+
+![Home](static/screenshots/home.png)
+
+---
+
+## Dashboard
+
+![Dashboard](static/screenshots/dashboard.png)
+
+---
+
+## Notice Details
+
+![Notice](static/screenshots/notice.png)
 
 ---
 
 # 📂 Project Structure
 
-```
-ABES-Digital-Notice-Board/
-
+```text
+ABES-Notice-Board
+│
+├── assets/
+├── database/
+│   ├── schema.sql
+│   └── notice.db
 │
 ├── static/
 │   ├── css/
 │   ├── js/
-│   ├── uploads/
-│   └── images/
 │   └── screenshots/
 │
 ├── templates/
-│   ├── layout.html
-│   ├── login.html
-│   ├── register.html
-│   ├── index.html
-│   ├── dashboard.html
-│   ├── add_notice.html
-│   ├── edit_notice.html
-│   ├── notice.html
-│   ├── view_notice.html
-│   ├── 404.html
-│   └── 500.html
 │
 ├── app.py
-├── config.py
 ├── helpers.py
-├── notices.db
+├── config.py
+├── init_db.py
 ├── requirements.txt
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
 ---
 
-# 🚀 Installation
+# ⚙️ Installation
 
-Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/ABES-Digital-Notice-Board.git
-```
-
-Move into the project
+## Clone Repository
 
 ```bash
-cd ABES-Digital-Notice-Board
+git clone https://github.com/MFazal231/ABES-Notice-Board.git
 ```
 
-Install dependencies
+```bash
+cd ABES-Notice-Board
+```
+
+---
+
+## Create Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
+## Install Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run the application
+---
+
+## Initialize Database
+
+```bash
+python init_db.py
+```
+
+---
+
+## Run
 
 ```bash
 flask run
 ```
 
-Open your browser
+---
 
-```
-http://127.0.0.1:5000
-```
+# 🔐 Default Admin Credentials
+
+| Username | Password |
+|-----------|----------|
+| admin | admin123 |
+
+> **Note:** Change the default password before deploying the application in a production environment.
 
 ---
 
-# 📖 How to Use
+# 📊 Dashboard
 
-1. Register a new account.
-2. Log in securely.
-3. Add new notices.
-4. Upload PDFs or images.
-5. Pin important notices.
-6. Search or filter announcements.
-7. Monitor analytics from the dashboard.
-8. Edit or delete notices whenever required.
+The administrator dashboard provides:
+
+- Total Notices
+- Department-wise Distribution
+- Category Statistics
+- Interactive Charts
+- Recent Activity
 
 ---
 
-# 🌟 Future Enhancements
+# 🔎 Search & Filters
+
+Students can easily search notices using:
+
+- Keywords
+- Department
+- Academic Year
+- Category
+
+making it easier to locate important announcements.
+
+---
+
+# 🔒 Authentication
+
+The application uses:
+
+- Password Hashing
+- Session Authentication
+- Role-Based Authorization
+- Protected Routes
+- Admin Middleware
+
+---
+
+# 📱 Responsive Design
+
+The website works across:
+
+- 💻 Desktop
+- 📱 Mobile
+- 📱 Tablet
+
+using Bootstrap 5.
+
+---
+
+# 🚀 Future Improvements
 
 - Email Notifications
-- Admin Roles
-- Student Portal
-- QR Code Sharing
-- Notice Expiry Dates
-- Mobile Application
+- Push Notifications
+- Multiple Admin Roles
+- Notice Scheduling
+- Student Profiles
+- PDF Preview
+- Image Attachments
 - REST API
-- Cloud Storage Integration
-
----
-
-# 📚 What I Learned
-
-During this project, I strengthened my understanding of:
-
-- Flask Routing
-- Authentication
-- CRUD Operations
-- SQLite Databases
-- Jinja Templates
-- Bootstrap 5
-- JavaScript
-- Chart.js
-- Responsive Web Design
-- UI/UX Principles
+- Docker Deployment
+- Cloud Database Support
 
 ---
 
@@ -225,19 +267,18 @@ During this project, I strengthened my understanding of:
 
 **Mohammad Fazal**
 
-B.Tech Computer Science Student
-
-ABES Engineering College
+- GitHub: https://github.com/MFazal231
 
 ---
 
-# 🙏 Acknowledgements
+# 📄 License
 
-- Harvard CS50
-- Flask Documentation
-- Bootstrap Documentation
-- Chart.js Documentation
+This project is licensed under the MIT License.
+
+See the **LICENSE** file for details.
 
 ---
 
-## ⭐ If you like this project, consider giving it a star!
+## ⭐ Support
+
+If you found this project helpful, consider giving it a ⭐ on GitHub.
