@@ -1,7 +1,11 @@
-# 📢 ABES Digital Notice Board
+# 📢 ABES Notice Board
 
 <p align="center">
-  <img src="assets/banner.png" alt="ABES Digital Notice Board Banner">
+  <img src="assets/banner.png" alt="ABES Digital Notice Board Banner" width="100%">
+</p>
+
+<p align="center">
+  <strong>A modern digital notice board system built with Flask, SQLite, Bootstrap, and Chart.js.</strong>
 </p>
 
 <p align="center">
@@ -10,6 +14,7 @@
 ![Flask](https://img.shields.io/badge/Flask-3.x-black?style=for-the-badge&logo=flask)
 ![SQLite](https://img.shields.io/badge/SQLite-Database-blue?style=for-the-badge&logo=sqlite)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?style=for-the-badge&logo=bootstrap)
+![Chart.js](https://img.shields.io/badge/Chart.js-Analytics-FF6384?style=for-the-badge&logo=chartdotjs)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 </p>
