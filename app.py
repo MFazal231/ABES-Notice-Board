@@ -16,7 +16,9 @@ from helpers import admin_required, login_required
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "c0a8542471f4e513321481d2b238ce878d4a062707eca28435ad7729dccbf933"
+import os
+
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "development-secret")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 

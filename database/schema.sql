@@ -16,6 +16,7 @@ CREATE TABLE notices (
     year TEXT,
     category TEXT,
     attachment TEXT,
+    pinned INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER,
     FOREIGN KEY(created_by) REFERENCES users(id)
