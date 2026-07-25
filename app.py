@@ -1,14 +1,27 @@
 import os
 import uuid
+import cloudinary
+import cloudinary.uploader
+import humanize
 
+from datetime import datetime, timezone
+from dotenv import load_dotenv
+from cloudinary.utils import cloudinary_url
 from flask import Flask, render_template, request, redirect, session, flash
 from flask_session import Session
 from cs50 import SQL
 from werkzeug.security import check_password_hash, generate_password_hash
 from config import DEPARTMENTS, YEARS, CATEGORIES
-
 from helpers import admin_required, login_required
 
+load_dotenv()
+
+cloudinary._config.update(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
 
 # -----------------------------
 # Flask App Configuration
@@ -47,7 +60,12 @@ ALLOWED_EXTENSIONS = {
 # Database
 # -----------------------------
 
-db = SQL("sqlite:///database/notice.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is not set")
+
+db = SQL(DATABASE_URL)
 
 
 # -----------------------------
@@ -56,20 +74,24 @@ db = SQL("sqlite:///database/notice.db")
 
 def create_default_admin():
     rows = db.execute(
-        "SELECT * FROM users WHERE username = ?",
-        "admin"
+        "SELECT * FROM users WHERE username = :username",
+        username="admin"
     )
 
     if len(rows) == 0:
         db.execute(
             """
             INSERT INTO users (username, hash, role)
-            VALUES (?, ?, ?)
+            VALUES (:username, :hash, :role)
             """,
-            "admin",
-            generate_password_hash("admin123"),
-            "admin"
+            username="admin",
+            hash=generate_password_hash("admin123"),
+            role="admin"
         )
+
+        print("✅ Default admin created.")
+    else:
+        print("ℹ️ Default admin already exists.")
 
 
 create_default_admin()
@@ -104,48 +126,51 @@ def index():
         WHERE 1=1
     """
 
-    params = []
+    params = {}
 
     if search:
         query += """
             AND (
-                title LIKE ?
-                OR description LIKE ?
-                OR department LIKE ?
-                OR year LIKE ?
-                OR category LIKE ?
+                title ILIKE :search
+                OR description ILIKE :search
+                OR department ILIKE :search
+                OR year ILIKE :search
+                OR category ILIKE :search
             )
         """
 
-        params.extend([
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%",
-            f"%{search}%"
-        ])
+        params["search"] = f"%{search}%"
 
     if department:
-        query += " AND department = ?"
-        params.append(department)
+        query += " AND department = :department"
+        params["department"] = department
 
     if year:
-        query += " AND year = ?"
-        params.append(year)
+        query += " AND year = :year"
+        params["year"] = year
 
     if category:
-        query += " AND category = ?"
-        params.append(category)
+        query += " AND category = :category"
+        params["category"] = category
 
     query += " ORDER BY pinned DESC, created_at DESC"
 
-    notices = db.execute(query, *params)
+    notices = db.execute(query, **params)
 
-    print(notices)
+    formatted_notices = []
+
+    for notice in notices:
+        new_notice = dict(notice)
+
+        new_notice["time_ago"] = humanize.naturaltime(
+            datetime.now() - new_notice["created_at"]
+        )
+
+        formatted_notices.append(new_notice)
 
     return render_template(
         "index.html",
-        notices=notices,
+        notices=formatted_notices,
         search=search,
         departments=DEPARTMENTS,
         years=YEARS,
@@ -171,8 +196,8 @@ def login():
             return redirect("/login")
 
         rows = db.execute(
-            "SELECT * FROM users WHERE username = ?",
-            username
+            "SELECT * FROM users WHERE username = :username",
+            username=username
         )
 
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
@@ -220,8 +245,8 @@ def register():
 
     # Check if username already exists
     existing_user = db.execute(
-        "SELECT * FROM users WHERE username = ?",
-        username
+        "SELECT * FROM users WHERE username = :username",
+        username=username
     )
 
     if existing_user:
@@ -233,10 +258,13 @@ def register():
 
     # Insert user
     db.execute(
-        "INSERT INTO users (username, hash, role) VALUES (?, ?, ?)",
-        username,
-        hash,
-        "student"
+        """
+        INSERT INTO users (username, hash, role)
+        VALUES (:username, :hash, :role)
+        """,
+        username=username,
+        hash=hash,
+        role="student"
     )
 
     flash("Registration successful! Please log in.", "success")
@@ -259,8 +287,16 @@ def dashboard():
         SELECT *
         FROM notices
         ORDER BY pinned DESC, created_at DESC
-        LIMIT ? OFFSET ?
-    """, per_page, offset)
+        LIMIT :limit OFFSET :offset
+    """,
+    limit=per_page,
+    offset=offset
+    )
+
+    for notice in notices:
+        notice["time_ago"] = humanize.naturaltime(
+            datetime.now() - notice["created_at"]
+    )
 
     total = db.execute(
         "SELECT COUNT(*) AS total FROM notices"
@@ -294,7 +330,7 @@ def dashboard():
 
     # Pinned notices
     pinned_notices = db.execute(
-        "SELECT COUNT(*) AS total FROM notices WHERE pinned = 1"
+        "SELECT COUNT(*) AS total FROM notices WHERE pinned = TRUE"
     )[0]["total"]
 
     # Notices with attachments
@@ -306,7 +342,7 @@ def dashboard():
     today_notices = db.execute("""
         SELECT COUNT(*) AS total
         FROM notices
-        WHERE DATE(created_at) = DATE('now', 'localtime')
+        WHERE DATE(created_at) = CURRENT_DATE
     """)[0]["total"]
 
     return render_template(
@@ -349,7 +385,7 @@ def add():
         department = request.form.get("department")
         year = request.form.get("year")
         category = request.form.get("category")
-        pinned = 1 if request.form.get("pinned") else 0
+        pinned = bool(request.form.get("pinned"))
 
         attachment = request.files.get("attachment")
         filename = None
@@ -362,33 +398,39 @@ def add():
 
             if not allowed_file(attachment.filename):
                 flash("Only PDF, PNG, JPG and JPEG files are allowed.", "danger")
-                return redirect("/add")
+                return redirect("/add")          
 
-            extension = attachment.filename.rsplit(".", 1)[1].lower()
-
-            filename = f"{uuid.uuid4()}.{extension}"
-
-            attachment.save(
-                os.path.join(
-                    app.config["UPLOAD_FOLDER"],
-                    filename
-                )
+            result = cloudinary.uploader.upload(
+                attachment,
+                resource_type="auto",
+                folder="abes_notice_board",
             )
+
+            filename = result["secure_url"]
 
         db.execute(
             """
             INSERT INTO notices
             (title, description, department, year, category, attachment, pinned, created_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (
+            :title,
+            :description,
+            :department,
+            :year,
+            :category,
+            :attachment,
+            :pinned,
+            :created_by
+            )
             """,
-            title,
-            description,
-            department,
-            year,
-            category,
-            filename,
-            pinned,
-            session["user_id"]
+            title=title,
+            description=description,
+            department=department,
+            year=year,
+            category=category,
+            attachment=filename,
+            pinned=pinned,
+            created_by=session["user_id"]
 )
 
         flash("Notice added successfully!", "success")
@@ -407,8 +449,8 @@ def add():
 def edit(notice_id):
 
     notice = db.execute(
-        "SELECT * FROM notices WHERE id = ?",
-        notice_id
+        "SELECT * FROM notices WHERE id = :id",
+        id=notice_id
     )
 
     if len(notice) != 1:
@@ -438,45 +480,32 @@ def edit(notice_id):
                 flash("Only PDF, PNG, JPG and JPEG files are allowed.", "danger")
                 return redirect(f"/edit/{notice_id}")
 
-            if notice["attachment"]:
-
-                old_path = os.path.join(
-                    app.config["UPLOAD_FOLDER"],
-                    notice["attachment"]
-                )
-
-                if os.path.exists(old_path):
-                    os.remove(old_path)
-
-            extension = attachment.filename.rsplit(".", 1)[1].lower()
-
-            filename = f"{uuid.uuid4()}.{extension}"
-
-            attachment.save(
-                os.path.join(
-                    app.config["UPLOAD_FOLDER"],
-                    filename
-                )
+            result = cloudinary.uploader.upload(
+                attachment,
+                resource_type="auto",
+                folder="abes_notice_board"
             )
+
+            filename = result["secure_url"]
 
         db.execute("""
             UPDATE notices
             SET
-                title = ?,
-                description = ?,
-                department = ?,
-                year = ?,
-                category = ?,
-                attachment = ?
-            WHERE id = ?
+                title = :title,
+                description = :description,
+                department = :department,
+                year = :year,
+                category = :category,
+                attachment = :attachment
+            WHERE id = :id
         """,
-        title,
-        description,
-        department,
-        year,
-        category,
-        filename,
-        notice_id
+        title=title,
+        description=description,
+        department=department,
+        year=year,
+        category=category,
+        attachment=filename,
+        id=notice_id
         )
 
         flash("Notice updated successfully!", "info")
@@ -497,8 +526,8 @@ def edit(notice_id):
 def delete(notice_id):
 
     notice = db.execute(
-        "SELECT * FROM notices WHERE id = ?",
-        notice_id
+        "SELECT * FROM notices WHERE id = :id",
+        id=notice_id
     )
 
     if len(notice) != 1:
@@ -506,19 +535,9 @@ def delete(notice_id):
 
     notice = notice[0]
 
-    if notice["attachment"]:
-
-        filepath = os.path.join(
-            app.config["UPLOAD_FOLDER"],
-            notice["attachment"]
-        )
-
-        if os.path.exists(filepath):
-            os.remove(filepath)
-
     db.execute(
-        "DELETE FROM notices WHERE id = ?",
-        notice_id
+        "DELETE FROM notices WHERE id = :id",
+        id=notice_id
     )
 
     flash("Notice deleted successfully!", "warning")
@@ -529,8 +548,8 @@ def delete(notice_id):
 def notice(notice_id):
 
     notice = db.execute(
-        "SELECT * FROM notices WHERE id = ?",
-        notice_id
+        "SELECT * FROM notices WHERE id = :id",
+        id=notice_id
     )
 
     if len(notice) != 1:
@@ -547,8 +566,8 @@ def notice(notice_id):
 def toggle_pin(notice_id):
 
     notice = db.execute(
-        "SELECT pinned FROM notices WHERE id = ?",
-        notice_id
+        "SELECT pinned FROM notices WHERE id = :id",
+        id=notice_id
     )
 
     if len(notice) != 1:
@@ -558,9 +577,9 @@ def toggle_pin(notice_id):
     new_status = 0 if notice[0]["pinned"] else 1
 
     db.execute(
-        "UPDATE notices SET pinned = ? WHERE id = ?",
-        new_status,
-        notice_id
+        "UPDATE notices SET pinned = :pinned WHERE id = :id",
+        pinned=bool(new_status),
+        id=notice_id
     )
 
     flash("Pin status updated!", "success")

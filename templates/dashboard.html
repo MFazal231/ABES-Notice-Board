@@ -176,7 +176,7 @@
 </td>
                 <td><span class="badge bg-primary rounded-pill">{{ notice.department }}</span></td>
                 <td><span class="badge bg-success rounded-pill">{{ notice.category }}</span></td>
-                <td>{{ notice.created_at }}</td>
+                <td><small class="text-muted" title="{{ notice.created_at.strftime('%d %b %Y, %I:%M %p') }}"><i class="bi bi-clock-history me-1"></i>{{ notice.time_ago }}</small></td>
 <td>
 
     <div class="action-buttons">

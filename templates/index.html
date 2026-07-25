@@ -253,7 +253,7 @@
                 {% if notice.attachment %}
 
                 <a
-                    href="{{ url_for('static', filename='uploads/' ~ notice.attachment) }}"
+                    href="{{ notice.attachment }}"
                     class="btn btn-outline-primary rounded-pill ms-2"
                     target="_blank">
 
@@ -267,11 +267,11 @@
 
             </div>
 
-            <small class="text-muted">
+            <small class="text-muted" title="{{ notice.created_at.strftime('%d %b %Y, %I:%M %p') }}">
 
                 <i class="bi bi-clock-history me-1"></i>
 
-                {{ notice.created_at }}
+                {{ notice.time_ago }}
 
             </small>
 
