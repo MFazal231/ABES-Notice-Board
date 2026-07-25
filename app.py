@@ -94,8 +94,6 @@ def create_default_admin():
         print("ℹ️ Default admin already exists.")
 
 
-create_default_admin()
-
 
 # -----------------------------
 # Helper Functions
