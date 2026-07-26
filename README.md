@@ -112,7 +112,7 @@ This project was developed as my **CS50 Final Project**.
 
 ## Notice Details
 
-![Notice](static/screenshots/notice.png)
+![Notice](static/screenshots/notice-details.png)
 
 ---
 
