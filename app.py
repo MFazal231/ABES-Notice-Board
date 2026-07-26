@@ -16,12 +16,19 @@ from helpers import admin_required, login_required
 
 load_dotenv()
 
+# Cloudinary Credentials
+
 cloudinary._config.update(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
     api_secret=os.getenv("CLOUDINARY_API_SECRET"),
     secure=True,
 )
+
+# Admin Credentials
+
+DEFAULT_ADMIN_USERNAME = os.getenv("DEFAULT_ADMIN_USERNAME")
+DEFAULT_ADMIN_PASSWORD = os.getenv("DEFAULT_ADMIN_PASSWORD")
 
 # -----------------------------
 # Flask App Configuration
@@ -75,7 +82,7 @@ db = SQL(DATABASE_URL)
 def create_default_admin():
     rows = db.execute(
         "SELECT * FROM users WHERE username = :username",
-        username="admin"
+        username=DEFAULT_ADMIN_USERNAME
     )
 
     if len(rows) == 0:
@@ -84,8 +91,8 @@ def create_default_admin():
             INSERT INTO users (username, hash, role)
             VALUES (:username, :hash, :role)
             """,
-            username="admin",
-            hash=generate_password_hash("admin123"),
+            username=DEFAULT_ADMIN_USERNAME,
+            hash=generate_password_hash(DEFAULT_ADMIN_PASSWORD),
             role="admin"
         )
 
